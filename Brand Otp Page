@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify OTP - Brand Offer</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      margin-top: 60px;
+      background: #fafafa;
+    }
+    input {
+      padding: 10px;
+      width: 250px;
+      margin: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 25px;
+      border: none;
+      border-radius: 8px;
+      background: black;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover { background: #333; }
+  </style>
+</head>
+<body>
+  <h2>Verify your Email to Unlock 50% OFF</h2>
+  <p>Enter your email to receive OTP:</p>
+
+  <input id="email" type="email" placeholder="Enter your email"><br>
+  <button onclick="sendOtp()">Send OTP</button>
+
+  <div id="otp-section" style="display:none;">
+    <p>Enter the OTP you received:</p>
+    <input id="otp" placeholder="Enter OTP"><br>
+    <button onclick="verifyOtp()">Verify OTP</button>
+  </div>
+
+  <p id="msg" style="margin-top:20px; color:#333;"></p>
+
+  <script>
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzB7sdCWAQ4tb3Du3gQpWWiwRkgii_Zt7wxdd6F4VKsR45pLYfzN1JCFGFI5XMHk1366w/exec";
+    const REDIRECT_URL = "https://tally.so/r/wzlAGE";
+    let sentOtp = null;
+
+    async function sendOtp() {
+      const email = document.getElementById('email').value;
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        sentOtp = data.otp;
+        document.getElementById('msg').innerText = "OTP sent to your email!";
+        document.getElementById('otp-section').style.display = "block";
+      } else {
+        document.getElementById('msg').innerText = "Failed to send OTP.";
+      }
+    }
+
+    function verifyOtp() {
+      const userOtp = document.getElementById('otp').value;
+      if (sentOtp && userOtp === sentOtp.toString()) {
+        document.getElementById('msg').innerText = "✅ Verified! Redirecting...";
+        setTimeout(() => window.location.href = REDIRECT_URL, 1000);
+      } else {
+        document.getElementById('msg').innerText = "❌ Invalid OTP!";
+      }
+    }
+  </script>
+</body>
+</html>
